@@ -14,6 +14,36 @@ model = joblib.load("flight_satisfaction_best_rs_gb_model.pkl")
 st.title("Airline Passenger Satisfaction")
 st.caption("Adjust inputs below — results update instantly as you change values.")
 
+# Subtle styling for the prediction panel only
+st.markdown(
+    """
+<style>
+.prediction-card {
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+.prediction-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+.prediction-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.prediction-prob {
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
 ## Categorical input options
 genders = ["Female", "Male"]
 customer_types = ["Loyal Customer", "disloyal Customer"]
@@ -99,8 +129,14 @@ with right:
         class_index = list(model.classes_).index(1)
         prob = model.predict_proba(df_input)[0][class_index]
 
-    st.write("Predicted Satisfaction")
-    st.write(f"**{label}**")
-
-    if prob is not None:
-        st.write(f"Probability of Satisfied: {prob:.2f}")
+    prob_text = f"{prob:.2f}" if prob is not None else "N/A"
+    st.markdown(
+        f"""
+<div class="prediction-card">
+  <div class="prediction-label">Predicted Satisfaction</div>
+  <div class="prediction-value">{label}</div>
+  <div class="prediction-prob">Probability of Satisfied: {prob_text}</div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
